@@ -1,1 +1,0 @@
-// Offline Map Cache Handler
