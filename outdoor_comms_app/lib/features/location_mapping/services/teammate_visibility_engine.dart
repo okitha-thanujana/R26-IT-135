@@ -1,1 +1,0 @@
-// Teammate Visibility Engine
