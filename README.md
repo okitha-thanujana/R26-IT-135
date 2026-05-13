@@ -12,16 +12,16 @@
 TrailLink is a hybrid outdoor communication and safety app for hikers, campers, and outdoor groups. Phase 01 builds the foundation only: Flutter mobile app structure, Node.js backend structure, MongoDB Atlas connectivity checks, SQLite local storage readiness, environment configuration, polished navigation, and system health screens.
 
 
-# Component 1 - Connectivity and Mesh Intelligence
+# Component 1 (IT22148704)- Connectivity and Mesh Intelligence
 Connectivity and Mesh Intelligence serves as the system's awareness layer for offline communication. It discovers nearby devices, tracks peer availability, and monitors signal strength using RSSI metrics. The component classifies connection quality into levels (strong, moderate, weak, unstable) and analyzes movement trends to determine whether a user is improving or degrading their connectivity. Its standout feature is the Connectivity Guidance Engine, which provides real-time, actionable suggestions to users — such as "move closer" or "relay through a stronger peer" — making the system intelligent and adaptive in remote environments.
 
-# Component 2 - Communication Core
+# Component 2 (IT22168290)- Communication Core
 The Communication Core handles all message transport across online and offline modes. It automatically switches between backend delivery and BLE mesh relay when internet is unavailable, stores messages locally in SQLite using a store-and-forward queue, enforces TTL and hop-count limits, prioritises emergency packets, and synchronises offline records to the backend upon reconnection.
 
-# Component 3 - Voice and Emergency Coordination
+# Component 3 (IT22894038)- Voice and Emergency Coordination
 The Voice and Emergency Coordination component handles SOS emergency alerts, Push-to-Talk voice notes, and live radio streaming across both online and offline modes. Online, it uses Node.js, Socket.IO, and MongoDB Atlas for real-time delivery. Offline, it uses Bluetooth LE for peer discovery and Google Nearby Connections over WiFi Direct for data transfer, with SQLite storing all records locally. A distributed floor control system ensures only one speaker at a time, and all features run on a normal Android smartphone without extra hardware.
 
-# Component 4 - Location, Mapping, and Sync
+# Component 4 (IT22544490) - Location, Mapping, and Sync
 enables real-time and offline location awareness for the TrailLink system. It captures GPS coordinates directly from the device, stores them locally using SQLite, and shares them with teammates either through the backend server when online, or through peer-to-peer packets when offline. The interactive map displays each teammate's position with freshness labels — Fresh, Old, or Stale — so users always know how reliable the data is. When internet is restored, all offline location data automatically syncs to the server. Additionally, the component provides location coordinates to the SOS emergency system, ensuring rescue-ready positioning at all times. 
 
 
