@@ -86,3 +86,5 @@ module.exports = {
   syncMessagesValidation,
   validate,
 };
+
+//validation messages
