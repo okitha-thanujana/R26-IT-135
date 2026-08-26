@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/constants/app_colors.dart';
+import '../../../core/offline/offline_packet_router.dart';
 import '../../../core/mode/mode_controller.dart';
 import '../../../core/mode/mode_models.dart';
 import '../../../core/settings/settings_service.dart';
@@ -89,6 +92,13 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     final state = ref.watch(locationControllerProvider(args));
     final controller = ref.read(locationControllerProvider(args).notifier);
     final modeState = ref.watch(modeControllerProvider);
+    ref.listen(offlinePacketRouterProvider, (_, next) {
+      final notice = next.lastNotice ?? '';
+      if (notice == 'Location update received.' ||
+          notice.contains('Location update received')) {
+        unawaited(controller.refresh());
+      }
+    });
     final sharingEnabled =
         ref.watch(_locationSharingEnabledProvider).asData?.value ?? true;
     final own = state.currentLocation;
@@ -110,7 +120,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           latitude: location.latitude,
           longitude: location.longitude,
           title: location.userName,
-          subtitle: '${location.freshness.label} - ${location.source}',
+          subtitle:
+              '${location.freshness.label} - ${_sourceLabel(location.source, modeState.effectiveMode)}',
           color: _colorFor(location.freshness),
           icon: Icons.person_pin_circle_rounded,
         ),
@@ -132,7 +143,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     ];
     final mapNotice = modeState.effectiveMode == EffectiveMode.online
         ? 'Map tiles are loaded online. Saved teammate locations remain available offline.'
-        : 'Offline mode: map tiles may be unavailable, but saved coordinates and teammate cards remain available.';
+        : 'Saved coordinates stay available here. New map details may need internet.';
 
     return Scaffold(
       appBar: AppBar(
@@ -155,7 +166,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 children: [
                   ModeStatusChip(state: modeState),
                   CompactStatusChip(
-                    label: own == null ? 'GPS pending' : 'GPS ready',
+                    label: own == null ? 'Getting GPS' : 'GPS ready',
                     color: own == null ? AppColors.warning : AppColors.success,
                     icon: own == null
                         ? Icons.gps_not_fixed_rounded
@@ -261,7 +272,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                       title: Text(location.userName),
                       subtitle: Text(
                         '${location.latitude.toStringAsFixed(5)}, ${location.longitude.toStringAsFixed(5)}\n'
-                        '${DateFormat.jm().format(location.capturedAt)} - ${location.source}',
+                        '${DateFormat.jm().format(location.capturedAt)} - ${_sourceLabel(location.source, modeState.effectiveMode)}',
                       ),
                       trailing:
                           LocationFreshnessChip(freshness: location.freshness),
@@ -344,6 +355,19 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       LocationFreshness.stale => AppColors.danger,
     };
   }
+}
+
+String _sourceLabel(String source, EffectiveMode mode) {
+  final normalized = source.toLowerCase();
+  if (normalized == 'peer') {
+    return mode == EffectiveMode.online
+        ? 'Last saved nearby location'
+        : 'Nearby phone';
+  }
+  if (normalized == 'online' || normalized == 'cloud') {
+    return 'Online update';
+  }
+  return 'Saved location';
 }
 
 class _MapControls extends StatelessWidget {
