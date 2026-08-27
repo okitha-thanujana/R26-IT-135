@@ -1735,3 +1735,5 @@ class LocalDatabase {
     return 'tl-${DateTime.now().millisecondsSinceEpoch}-$random';
   }
 }
+
+//Store offline messages in local database and sync with cloud when internet is available.
