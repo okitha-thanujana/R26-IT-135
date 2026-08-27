@@ -1,5 +1,7 @@
 import 'dart:math';
 
+//Store offline messages in local database and sync with cloud when internet is available.
+
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -1736,4 +1738,3 @@ class LocalDatabase {
   }
 }
 
-//Store offline messages in local database and sync with cloud when internet is available.
